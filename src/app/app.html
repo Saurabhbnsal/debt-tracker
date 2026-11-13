@@ -1,0 +1,44 @@
+<header class="summary">
+  <div class="summary-top">
+    <span class="muted">Total outstanding</span>
+    <strong class="big">{{ inr(store.totalOutstanding()) }}</strong>
+  </div>
+  <div class="progress light"><div [style.width.%]="repaidPct()"></div></div>
+  <div class="summary-grid">
+    <div><span>Monthly EMIs</span><strong>{{ inr(store.totalEmi()) }}</strong></div>
+    <div><span>Debt free</span><strong>{{ store.activeLoans().length ? (plan().months === null ? 'Never' : monthLabel(plan().months!)) : '—' }}</strong></div>
+    <div><span>Interest left</span><strong>{{ inr(plan().totalInterest) }}</strong></div>
+  </div>
+</header>
+
+<main>
+  @switch (tab()) {
+    @case ('loans') { <app-loans /> }
+    @case ('plan') { <app-plan /> }
+    @case ('backup') {
+      <section class="card">
+        <h2>Backup</h2>
+        <p class="muted small">Your data is saved only in this browser on this phone. Clearing browser data deletes it, so download a backup now and then.</p>
+        <div class="stack">
+          <button class="primary" (click)="exportData()">Download backup</button>
+          <label class="ghost filebtn">Restore from backup
+            <input type="file" accept="application/json,.json" (change)="importData($event)" />
+          </label>
+        </div>
+        @if (message()) { <p class="hint">{{ message() }}</p> }
+      </section>
+    }
+  }
+</main>
+
+<nav class="tabs">
+  <button [class.on]="tab() === 'loans'" (click)="tab.set('loans')">
+    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12" /></svg>Loans
+  </button>
+  <button [class.on]="tab() === 'plan'" (click)="tab.set('plan')">
+    <svg viewBox="0 0 24 24"><path d="M3 20l6-7 4 4 8-10" /></svg>Plan
+  </button>
+  <button [class.on]="tab() === 'backup'" (click)="tab.set('backup')">
+    <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3" /></svg>Backup
+  </button>
+</nav>
